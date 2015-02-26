@@ -1,10 +1,14 @@
 {
-  "name": "VideoScroller",
-  "version": "1.0.0",
+  "name": "video-scroller",
+  "version": "1.0.1",
   "description": "Scrubbs html5 video based on scroll position",
   "main": "src/VideoScroller.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/finnursig/VideoScroller.git"
   },
   "keywords": [
     "video",
@@ -12,7 +16,7 @@
     "scrubbing"
   ],
   "author": "Finnur Sigurðsson <finnursigu@gmail.com> (http://finnursig.com)",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "gulp": "^3.8.11",
     "gulp-concat": "^2.5.2",
