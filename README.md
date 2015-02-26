@@ -10,6 +10,6 @@ new VideoScroller({
 
 ## Video requirements
 
-To get the video to scroll smoothly is has to have a generous number of keyframes, here is how you would do that using [ffmpeg](https://www.ffmpeg.org/)
+To get the video to scroll smoothly it has to have a generous number of keyframes, here is how you would do that using [ffmpeg](https://www.ffmpeg.org/)
 
 `ffmpeg -i input.mp4 -g 10 output.mp4`

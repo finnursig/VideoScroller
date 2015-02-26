@@ -55,6 +55,7 @@
         this.transitionTime = this.options.transitionTime || 2000;
         this.easingFunction = this.options.easingFunction || EasingFunctions.easeOutQuint;
         this.invert = this.options.invert !== undefined ? this.options.invert : false;
+        this.scrollTimeout = this.options.scrollTimeout || 300;
 
         this.el = this.options.el;
         this.el.addEventListener('loadeddata', this.init.bind(this));
@@ -160,7 +161,7 @@
                     return;
 
                 this.start(time);
-            }.bind(this), 200);
+            }.bind(this), this.scrollTimeout);
         }
     };
 
