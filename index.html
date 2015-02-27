@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>VideoScroller.js</title>
+
+    <style type="text/css">
+        html {
+            height: 100%;
+        }
+
+        body {
+            margin: 50px auto;
+
+            height: 200%;
+            width: 1000px;
+            max-width: 100%;
+
+            font-family: "Helvetic Neue", Helvetica, Arial, sans-serif;
+            text-align: center;
+        }
+
+        a {
+            text-decoration: none;
+
+            color: #000;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .video-container {
+            position: relative;
+
+            top: 30%;
+
+            width: 100%;
+        }
+
+        video {
+            display: block;
+
+            max-width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1><a href="https://github.com/finnursig/VideoScroller">VideoScroller.js</a></h1>
+<h2>Scroll down</h2>
+
+<div id="videoContainer" class="video-container"></div>
+
+<script src="https://rawgit.com/finnursig/videoscroller/master/dist/video-scroller.min.js"></script>
+<script>
+    var videoContainerEl = document.getElementById('videoContainer');
+
+    videoContainerEl.innerHTML = '<video src="iphone6.mp4"></video>';
+
+    new VideoScroller({
+        el: videoContainerEl.getElementsByTagName('video')[0]
+    });
+</script>
+
+</body>
+
+</html>
