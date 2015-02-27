@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>VideoScroller.js</title>
+
+    <style type="text/css">
+        html {
+            height: 100%;
+        }
+
+        body {
+            margin: 50px auto;
+
+            height: 200%;
+            width: 1000px;
+            max-width: 100%;
+
+            font-family: "Helvetic Neue", Helvetica, Arial, sans-serif;
+            text-align: center;
+        }
+
+        a {
+            text-decoration: none;
+
+            color: #000;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .video-container {
+            position: relative;
+
+            top: 30%;
+
+            width: 100%;
+        }
+
+        video {
+            display: block;
+
+            max-width: 100%;
+
+            opacity: 0;
+
+            transition: opacity 1s;
+        }
+
+        .video-scroller-ready {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1><a href="https://github.com/finnursig/VideoScroller">VideoScroller.js</a></h1>
+<h2>Scroll down</h2>
+
+<div id="videoContainer" class="video-container">
+    <video src="iphone6.min.mp4" preload class="foo bar"></video>
+</div>
+
+<script src="../dist/video-scroller.min.js"></script>
+<script>
+    var videoContainerEl = document.getElementById('videoContainer');
+
+    new VideoScroller({
+        el: videoContainerEl.getElementsByTagName('video')[0],
+        debug: true
+    });
+</script>
+
+</body>
+
+</html>

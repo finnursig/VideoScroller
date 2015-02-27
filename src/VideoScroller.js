@@ -1,119 +1,138 @@
-var VideoScroller = function(options){
-	this.options = options || {};
+class VideoScroller {
+    constructor({
+        el,
+        transitionTime = 2000,
+        invert = false,
+        scrollTimeout = 300,
+        easingFunction = EasingFunctions.easeOutQuint,
+        debug = false
+    }) {
+        if(!el) {
+            throw new Error('Missing video element ref.');
+        }
 
-	if(!this.options.el) {
-		throw new Error('Missing video element ref.');
-	}
+        this.el = el;
+        this.transitionTime = transitionTime;
+        this.invert = invert;
+        this.scrollTimeout = scrollTimeout;
+        this.easingFunction = easingFunction;
+        this.debug = debug;
 
-	this.transitionTime = this.options.transitionTime || 2000;
-	this.easingFunction = this.options.easingFunction || EasingFunctions.easeOutQuint;
-	this.invert = this.options.invert !== undefined ? this.options.invert : false;
-	this.scrollTimeout = this.options.scrollTimeout || 300;
+        // if video is ready, init
+        if(this.el.readyState > 1){
+            this.init();
+        } else {
+            // else wait for it
+            this.el.addEventListener('loadeddata', () => this.init());
+        }
+    }
 
-	this.el = this.options.el;
-	this.el.addEventListener('loadeddata', this.init.bind(this));
-};
+    init(){
+        this.videoDuration = this.el.duration;
 
-VideoScroller.prototype = {
-	init: function(){
-		this.videoDuration = this.el.duration;
+        if(this.debug){
+            this.el.controls = true;
+        }
 
-		window.addEventListener('scroll', this.onScroll.bind(this), false);
+        this.el.className = this.el.className + ' video-scroller-ready';
 
-		this.start(this.inView(this.el));
-	},
+        window.addEventListener('scroll', (e) => this.onScroll(), false);
 
-	start: function(time){
-		this.startTime = Date.now();
+        this.start(this.inView(this.el));
+    }
 
-		this.currentTime = this.el.currentTime;
-		this.targetDuration = (this.videoDuration * time) - this.el.currentTime;
+    start(time){
+        this.startTime = Date.now();
 
-		//console.log('time=', time,'targetTime=', this.currentTime, 'targetDuration', this.targetDuration);
+        this.currentTime = this.el.currentTime;
+        this.targetDuration = (this.videoDuration * time) - this.el.currentTime;
 
-		if(!this.intervalTimer){
-			this.intervalTimer = setInterval(this.loop.bind(this), 50);
-		}
-	},
+        if(this.debug) {
+            console.log('time=', time,'targetTime=', this.currentTime, 'targetDuration', this.targetDuration);
+        }
 
-	loop: function(){
-		var i = (Date.now() - this.startTime) / this.transitionTime;
-		var easing = this.easingFunction(i);
+        if(!this.intervalTimer){
+            this.intervalTimer = setInterval(() => this.loop(), 50);
+        }
+    }
 
-		if(i >= 1){
-			return;
-		}
+    loop(){
+        var i = (Date.now() - this.startTime) / this.transitionTime;
+        var easing = this.easingFunction(i);
 
-		this.el.currentTime = this.currentTime + this.targetDuration * easing;
-		this.el.pause();
-	},
+        if(i >= 1){
+            return;
+        }
 
-	inView: function(){
-		var scrollTop = document.body.scrollTop;
-		var windowHeight = window.innerHeight;
+        this.el.currentTime = this.currentTime + this.targetDuration * easing;
+        this.el.pause();
+    }
 
-		var elTop = this.el.getBoundingClientRect().top;
-		var elHeight = this.el.offsetHeight;
+    inView(){
+        var windowHeight = window.innerHeight;
 
-		var fromTop = elTop - windowHeight;
+        var elTop = this.el.getBoundingClientRect().top;
+        var elHeight = this.el.offsetHeight;
 
-		if(fromTop > 0){
-			fromTop = 0;
-		}
+        var fromTop = elTop - windowHeight;
 
-		var percentage = Math.abs(fromTop) / (windowHeight * 1.5);
+        if(fromTop > 0){
+            fromTop = 0;
+        }
 
-		//console.log(scrollTop, elTop, percentage);
+        var percentage = Math.abs(fromTop) / (windowHeight + elHeight);
 
-		if(!this.invert){
-			percentage = 1-percentage;
-		}
+        //console.log(scrollTop, elTop, percentage);
 
-		if(percentage > 1){
-			return 1;
-		} else if(percentage < 0){
-			return 0;
-		}
+        if(!this.invert){
+            percentage = 1-percentage;
+        }
 
-		return percentage;
-	},
+        if(percentage > 1){
+            return 1;
+        } else if(percentage < 0){
+            return 0;
+        }
 
-	inCenter: function(el){
-		var scrollTop = document.body.scrollTop;
-		var windowHeight = window.innerHeight;
+        return percentage;
+    }
 
-		var elTop = el.getBoundingClientRect().top;
-		var elHeight = el.offsetHeight;
+    inCenter(el){
+        var scrollTop = document.body.scrollTop;
+        var windowHeight = window.innerHeight;
 
-		var bar = elTop - (windowHeight / 2) + (elHeight / 2);
+        var elTop = el.getBoundingClientRect().top;
+        var elHeight = el.offsetHeight;
 
-		var percentage = Math.abs(bar / (windowHeight / 2));
+        var bar = elTop - (windowHeight / 2) + (elHeight / 2);
 
-		if(percentage > 1){
-			return 1;
-		} else if(percentage < 0){
-			return 0;
-		}
+        var percentage = Math.abs(bar / (windowHeight / 2));
 
-		return percentage;
-	},
+        if(percentage > 1){
+            return 1;
+        } else if(percentage < 0){
+            return 0;
+        }
 
-	onScroll: function(){
-		if(this.isWaiting) {
-			return;
-		}
+        return percentage;
+    }
 
-		this.isWaiting = true;
+    onScroll(){
+        if(this.isWaiting) {
+            return;
+        }
 
-		setTimeout(function(){
-			this.isWaiting = false;
+        this.isWaiting = true;
 
-			var time = this.inView(this.el);
+        setTimeout(() => {
+            this.isWaiting = false;
 
-			if(time === undefined)
-				return;
+            var time = this.inView(this.el);
 
-			this.start(time);
-		}.bind(this), this.scrollTimeout);
-	}
-};
+            if(time === undefined)
+                return;
+
+            this.start(time);
+        }, this.scrollTimeout);
+    }
+}
