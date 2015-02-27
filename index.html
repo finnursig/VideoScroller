@@ -43,6 +43,14 @@
             display: block;
 
             max-width: 100%;
+
+            opacity: 0;
+
+            transition: opacity 1s;
+        }
+
+        .video-scroller-ready {
+            opacity: 1;
         }
     </style>
 </head>
@@ -52,7 +60,9 @@
 <h1><a href="https://github.com/finnursig/VideoScroller">VideoScroller.js</a></h1>
 <h2>Scroll down</h2>
 
-<div id="videoContainer" class="video-container"></div>
+<div id="videoContainer" class="video-container">
+    <video src="iphone6.min.mp4" preload></video>
+</div>
 
 <script src="https://rawgit.com/finnursig/videoscroller/master/dist/video-scroller.min.js"></script>
 <script>
