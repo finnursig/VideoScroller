@@ -1,12 +1,28 @@
 # VideoScroller.js
 
-## Getting started
+## Demo
+
+
+## Installation
+
+```
+npm install video-scroller
+```
+
+## Usage
 
 ```
 new VideoScroller({
     el: document.getElementById('myVideoElement')
 });
 ```
+
+## Options
+
+* `el` video element (required)
+* `invert` reverses playback directions / scroll direction,
+* `scrollTimeout` how often new position is calculated when scrolling
+* `easingFunction` custom easing function, using only one parameter [0-1] and returning [0-1]
 
 ## Video requirements
 

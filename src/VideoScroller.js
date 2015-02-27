@@ -43,7 +43,7 @@
         easeOutQuint: function (t) { return 1+(--t)*t*t*t*t },
         // acceleration until halfway, then deceleration
         easeInOutQuint: function (t) { return t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t }
-    }
+    };
 
     var VideoScroller = function(options){
         this.options = options || {};
@@ -102,13 +102,13 @@
             var elTop = this.el.getBoundingClientRect().top;
             var elHeight = this.el.offsetHeight;
 
-            var bar = elTop - windowHeight;
+            var fromTop = elTop - windowHeight;
 
-            if(bar > 0){
-                bar = 0;
+            if(fromTop > 0){
+                fromTop = 0;
             }
 
-            var percentage = Math.abs(bar) / (windowHeight * 1.5);
+            var percentage = Math.abs(fromTop) / (windowHeight * 1.5);
 
             //console.log(scrollTop, elTop, percentage);
 
