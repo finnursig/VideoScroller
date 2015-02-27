@@ -1,173 +1,119 @@
-(function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        // AMD. Register as an anonymous module.
-        define([], factory);
-    } else if (typeof exports === 'object') {
-        // Node. Does not work with strict CommonJS, but
-        // only CommonJS-like environments that support module.exports,
-        // like Node.
-        module.exports = factory();
-    } else {
-        root.VideoScroller = factory();
-    }
-}(this, function () {
+var VideoScroller = function(options){
+	this.options = options || {};
 
-    /*
-     * Easing Functions - inspired from http://gizma.com/easing/
-     * only considering the t value for the range [0, 1] => [0, 1]
-     */
-    var EasingFunctions = {
-        // no easing, no acceleration
-        linear: function (t) { return t },
-        // accelerating from zero velocity
-        easeInQuad: function (t) { return t*t },
-        // decelerating to zero velocity
-        easeOutQuad: function (t) { return t*(2-t) },
-        // acceleration until halfway, then deceleration
-        easeInOutQuad: function (t) { return t<.5 ? 2*t*t : -1+(4-2*t)*t },
-        // accelerating from zero velocity
-        easeInCubic: function (t) { return t*t*t },
-        // decelerating to zero velocity
-        easeOutCubic: function (t) { return (--t)*t*t+1 },
-        // acceleration until halfway, then deceleration
-        easeInOutCubic: function (t) { return t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1 },
-        // accelerating from zero velocity
-        easeInQuart: function (t) { return t*t*t*t },
-        // decelerating to zero velocity
-        easeOutQuart: function (t) { return 1-(--t)*t*t*t },
-        // acceleration until halfway, then deceleration
-        easeInOutQuart: function (t) { return t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t },
-        // accelerating from zero velocity
-        easeInQuint: function (t) { return t*t*t*t*t },
-        // decelerating to zero velocity
-        easeOutQuint: function (t) { return 1+(--t)*t*t*t*t },
-        // acceleration until halfway, then deceleration
-        easeInOutQuint: function (t) { return t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t }
-    };
+	if(!this.options.el) {
+		throw new Error('Missing video element ref.');
+	}
 
-    var VideoScroller = function(options){
-        this.options = options || {};
+	this.transitionTime = this.options.transitionTime || 2000;
+	this.easingFunction = this.options.easingFunction || EasingFunctions.easeOutQuint;
+	this.invert = this.options.invert !== undefined ? this.options.invert : false;
+	this.scrollTimeout = this.options.scrollTimeout || 300;
 
-        if(!this.options.el) {
-            throw new Error('Missing video element ref.');
-        }
+	this.el = this.options.el;
+	this.el.addEventListener('loadeddata', this.init.bind(this));
+};
 
-        this.transitionTime = this.options.transitionTime || 2000;
-        this.easingFunction = this.options.easingFunction || EasingFunctions.easeOutQuint;
-        this.invert = this.options.invert !== undefined ? this.options.invert : false;
-        this.scrollTimeout = this.options.scrollTimeout || 300;
+VideoScroller.prototype = {
+	init: function(){
+		this.videoDuration = this.el.duration;
 
-        this.el = this.options.el;
-        this.el.addEventListener('loadeddata', this.init.bind(this));
-    };
+		window.addEventListener('scroll', this.onScroll.bind(this), false);
 
-    VideoScroller.prototype = {
-        init: function(){
-            this.videoDuration = this.el.duration;
+		this.start(this.inView(this.el));
+	},
 
-            window.addEventListener('scroll', this.onScroll.bind(this), false);
+	start: function(time){
+		this.startTime = Date.now();
 
-            this.start(this.inView(this.el));
-        },
+		this.currentTime = this.el.currentTime;
+		this.targetDuration = (this.videoDuration * time) - this.el.currentTime;
 
-        start: function(time){
-            this.startTime = Date.now();
+		//console.log('time=', time,'targetTime=', this.currentTime, 'targetDuration', this.targetDuration);
 
-            this.currentTime = this.el.currentTime;
-            this.targetDuration = (this.videoDuration * time) - this.el.currentTime;
+		if(!this.intervalTimer){
+			this.intervalTimer = setInterval(this.loop.bind(this), 50);
+		}
+	},
 
-            //console.log('time=', time,'targetTime=', this.currentTime, 'targetDuration', this.targetDuration);
+	loop: function(){
+		var i = (Date.now() - this.startTime) / this.transitionTime;
+		var easing = this.easingFunction(i);
 
-            if(!this.intervalTimer){
-                this.intervalTimer = setInterval(this.loop.bind(this), 50);
-            }
-        },
+		if(i >= 1){
+			return;
+		}
 
-        loop: function(){
-            var i = (Date.now() - this.startTime) / this.transitionTime;
-            var easing = this.easingFunction(i);
+		this.el.currentTime = this.currentTime + this.targetDuration * easing;
+		this.el.pause();
+	},
 
-            if(i >= 1){
-                return;
-            }
+	inView: function(){
+		var scrollTop = document.body.scrollTop;
+		var windowHeight = window.innerHeight;
 
-            this.el.currentTime = this.currentTime + this.targetDuration * easing;
-            this.el.pause();
-        },
+		var elTop = this.el.getBoundingClientRect().top;
+		var elHeight = this.el.offsetHeight;
 
-        inView: function(){
-            var scrollTop = document.body.scrollTop;
-            var windowHeight = window.innerHeight;
+		var fromTop = elTop - windowHeight;
 
-            var elTop = this.el.getBoundingClientRect().top;
-            var elHeight = this.el.offsetHeight;
+		if(fromTop > 0){
+			fromTop = 0;
+		}
 
-            var fromTop = elTop - windowHeight;
+		var percentage = Math.abs(fromTop) / (windowHeight * 1.5);
 
-            if(fromTop > 0){
-                fromTop = 0;
-            }
+		//console.log(scrollTop, elTop, percentage);
 
-            var percentage = Math.abs(fromTop) / (windowHeight * 1.5);
+		if(!this.invert){
+			percentage = 1-percentage;
+		}
 
-            //console.log(scrollTop, elTop, percentage);
+		if(percentage > 1){
+			return 1;
+		} else if(percentage < 0){
+			return 0;
+		}
 
-            if(!this.invert){
-                percentage = 1-percentage;
-            }
+		return percentage;
+	},
 
-            if(percentage > 1){
-                return 1;
-            } else if(percentage < 0){
-                return 0;
-            }
+	inCenter: function(el){
+		var scrollTop = document.body.scrollTop;
+		var windowHeight = window.innerHeight;
 
-            return percentage;
-        },
+		var elTop = el.getBoundingClientRect().top;
+		var elHeight = el.offsetHeight;
 
-        inCenter: function(el){
-            var scrollTop = document.body.scrollTop;
-            var windowHeight = window.innerHeight;
+		var bar = elTop - (windowHeight / 2) + (elHeight / 2);
 
-            var elTop = el.getBoundingClientRect().top;
-            var elHeight = el.offsetHeight;
+		var percentage = Math.abs(bar / (windowHeight / 2));
 
-            var bar = elTop - (windowHeight / 2) + (elHeight / 2);
+		if(percentage > 1){
+			return 1;
+		} else if(percentage < 0){
+			return 0;
+		}
 
-            var percentage = Math.abs(bar / (windowHeight / 2));
+		return percentage;
+	},
 
-            if(percentage > 1){
-                return 1;
-            } else if(percentage < 0){
-                return 0;
-            }
+	onScroll: function(){
+		if(this.isWaiting) {
+			return;
+		}
 
-            return percentage;
-        },
+		this.isWaiting = true;
 
-        onScroll: function(){
-            if(this.isWaiting) {
-                return;
-            }
+		setTimeout(function(){
+			this.isWaiting = false;
 
-            this.isWaiting = true;
+			var time = this.inView(this.el);
 
-            setTimeout(function(){
-                this.isWaiting = false;
+			if(time === undefined)
+				return;
 
-                var time = this.inView(this.el);
-
-                if(time === undefined)
-                    return;
-
-                this.start(time);
-            }.bind(this), this.scrollTimeout);
-        }
-    };
-
-    return VideoScroller;
-}));
-
-
-
-
+			this.start(time);
+		}.bind(this), this.scrollTimeout);
+	}
+};

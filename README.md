@@ -1,7 +1,10 @@
 # VideoScroller.js
 
+Video scrubbing on scroll with easing using no dependencies.
+
 ## Demo
 
+[http://finnursig.github.io/videoscroller](http://finnursig.github.io/videoscroller)
 
 ## Installation
 
@@ -20,8 +23,8 @@ new VideoScroller({
 ## Options
 
 * `el` video element (required)
-* `invert` reverses playback directions / scroll direction,
-* `scrollTimeout` how often new position is calculated when scrolling
+* `invert` reverses playback directions / scroll direction (default: false)
+* `scrollTimeout` how often new position is calculated when scrolling in milliseconds (default: 300)
 * `easingFunction` custom easing function, using only one parameter [0-1] and returning [0-1]
 
 ## Video requirements
