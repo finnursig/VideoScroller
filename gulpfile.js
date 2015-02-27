@@ -1,12 +1,21 @@
 var gulp = require('gulp');
 var uglify = require('gulp-uglify');
-var rename = require('gulp-rename');
+var concat = require('gulp-concat');
+var umd = require('gulp-umd');
 
-var packageInfo = require('./package.json');
+// var packageInfo = require('./package.json');
 
-gulp.task('default', function(){
-    return gulp.src('src/VideoScroller.js')
-        .pipe(uglify())
-        .pipe(rename('VideoScroller-'+ packageInfo.version +'.min.js'))
+gulp.task('script', function(){
+    return gulp.src([
+		'src/EasingFunctions.js',
+		'src/VideoScroller.js'
+	])
+        .pipe(concat('video-scroller.min.js'))
+		.pipe(umd())
+		.pipe(uglify())
         .pipe(gulp.dest('dist/'));
+});
+
+gulp.task('default', ['script'], function(){
+	gulp.watch('src/**/*.js', ['script']);
 });
