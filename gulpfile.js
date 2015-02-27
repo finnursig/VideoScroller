@@ -11,7 +11,14 @@ gulp.task('script', function(){
 		'src/VideoScroller.js'
 	])
         .pipe(concat('video-scroller.min.js'))
-		.pipe(umd())
+		.pipe(umd({
+			exports: function(file) {
+				return 'VideoScroller';
+			},
+			namespace: function(file) {
+				return 'VideoScroller';
+			}
+		}))
 		.pipe(uglify())
         .pipe(gulp.dest('dist/'));
 });
