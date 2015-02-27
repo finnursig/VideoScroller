@@ -4,7 +4,7 @@ Video scrubbing on scroll with easing using no dependencies.
 
 ## Demo
 
-[http://finnursig.github.io/videoscroller](http://finnursig.github.io/videoscroller)
+[http://finnursig.github.io/VideoScroller](http://finnursig.github.io/VideoScroller)
 
 ## Installation
 
