@@ -1,6 +1,6 @@
 {
   "name": "video-scroller",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Scrubbs html5 video based on scroll position with easing",
   "main": "dist/video-scroller.min.js",
   "scripts": {

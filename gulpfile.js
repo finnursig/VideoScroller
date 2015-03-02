@@ -25,7 +25,7 @@ gulp.task('script', function(){
 				return 'VideoScroller';
 			}
 		}))
-		//.pipe(uglify())
+		.pipe(uglify())
         .pipe(gulp.dest('dist/'));
 });
 

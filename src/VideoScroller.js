@@ -1,3 +1,9 @@
+/***
+ * VideoScroller.js
+ * URL: https://github.com/finnursig/VideoScroller
+ * Author: Finnur Sigurðsson (finnursigu@gmail.com)
+ */
+
 // IE10+: window.URL.createObjectURL
 
 class VideoScroller {
@@ -17,10 +23,10 @@ class VideoScroller {
         this.transitionTime = transitionTime;
         this.invert = invert;
         this.scrollTimeout = scrollTimeout;
-        this.easingFunction = easingFunction;
+        this.easingFunction = easingFunction == "function" ? easingFunction : EasingFunctions[easingFunction];
         this.debug = debug;
 
-		if(!this.isCompatableWithCurrentBrowser()){
+		if(!VideoScroller.isCompatibleWithCurrentBrowser()){
 			return;
 		}
 
@@ -39,8 +45,12 @@ class VideoScroller {
 		}
     }
 
-	isCompatableWithCurrentBrowser(){
+	static isCompatibleWithCurrentBrowser(){
 		if(!window.URL || !window.URL.createObjectURL){
+			return false;
+		}
+
+		if(!XMLHttpRequest){
 			return false;
 		}
 
@@ -127,31 +137,9 @@ class VideoScroller {
 
         var percentage = Math.abs(fromTop) / (windowHeight + elHeight);
 
-        //console.log(scrollTop, elTop, percentage);
-
         if(!this.invert){
             percentage = 1-percentage;
         }
-
-        if(percentage > 1){
-            return 1;
-        } else if(percentage < 0){
-            return 0;
-        }
-
-        return percentage;
-    }
-
-    inCenter(el){
-        var scrollTop = document.body.scrollTop;
-        var windowHeight = window.innerHeight;
-
-        var elTop = el.getBoundingClientRect().top;
-        var elHeight = el.offsetHeight;
-
-        var bar = elTop - (windowHeight / 2) + (elHeight / 2);
-
-        var percentage = Math.abs(bar / (windowHeight / 2));
 
         if(percentage > 1){
             return 1;
