@@ -1,3 +1,5 @@
+// IE10+: window.URL.createObjectURL
+
 class VideoScroller {
     constructor({
         el,
@@ -18,14 +20,57 @@ class VideoScroller {
         this.easingFunction = easingFunction;
         this.debug = debug;
 
-        // if video is ready, init
-        if(this.el.readyState > 1){
-            this.init();
-        } else {
-            // else wait for it
-            this.el.addEventListener('loadeddata', () => this.init());
-        }
+		if(!this.isCompatableWithCurrentBrowser()){
+			return;
+		}
+
+		if(this.el.getAttribute('data-src')) {
+
+			this.getVideo();
+
+		} else {
+			// if video is ready, init
+			if(this.el.readyState > 1){
+				this.init();
+			} else {
+				// else wait for it
+				this.el.addEventListener('loadeddata', () => this.init());
+			}
+		}
     }
+
+	isCompatableWithCurrentBrowser(){
+		if(!window.URL || !window.URL.createObjectURL){
+			return false;
+		}
+
+		return true;
+	}
+
+	getVideo(){
+		var req = new XMLHttpRequest();
+
+		req.open('get', this.el.getAttribute('data-src'), true);
+		req.responseType = 'blob';
+		req.withCredentials = false;
+
+		req.onload = () => {
+			this.el.addEventListener('loadeddata', () => this.init());
+			this.el.src = window.URL.createObjectURL(req.response);
+		};
+
+		req.onprogress = (requestProgress) => {
+			var percentage = Math.round(requestProgress.loaded / requestProgress.total * 100);
+
+			console.log('onprogress', percentage + '%');
+		};
+
+		req.onreadystatechange = () => {
+			console.log('onreadystatechange', req.readyState);
+		};
+
+		req.send();
+	}
 
     init(){
         this.videoDuration = this.el.duration;
@@ -52,7 +97,7 @@ class VideoScroller {
         }
 
         if(!this.intervalTimer){
-            this.intervalTimer = setInterval(() => this.loop(), 50);
+            this.intervalTimer = setInterval(() => this.loop(), 60);
         }
     }
 
