@@ -23,7 +23,7 @@ class VideoScroller {
         this.transitionTime = transitionTime;
         this.invert = invert;
         this.scrollTimeout = scrollTimeout;
-        this.easingFunction = easingFunction == "function" ? easingFunction : EasingFunctions[easingFunction];
+        this.easingFunction = typeof easingFunction == "function" ? easingFunction : EasingFunctions[easingFunction];
         this.debug = debug;
 
 		if(!VideoScroller.isCompatibleWithCurrentBrowser()){
@@ -72,11 +72,13 @@ class VideoScroller {
 		req.onprogress = (requestProgress) => {
 			var percentage = Math.round(requestProgress.loaded / requestProgress.total * 100);
 
-			console.log('onprogress', percentage + '%');
+			if(this.debug)
+				console.log('onprogress', percentage + '%');
 		};
 
 		req.onreadystatechange = () => {
-			console.log('onreadystatechange', req.readyState);
+			if(this.debug)
+				console.log('onreadystatechange', req.readyState);
 		};
 
 		req.send();
