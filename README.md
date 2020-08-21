@@ -58,7 +58,7 @@ To get the video to scroll smoothly it has to have a generous number of keyframe
 * **1.1.0**
 	* Added XHR to blog option to get rid of "206 Partal Content" requests.
 	* Easingfunction option can now be a string.
-* **1.0.3**
+* **1.0.3***
 	* Changed code from ES5 to ES6 using babel.
 * **1.0.2**
 * **1.0.1**
